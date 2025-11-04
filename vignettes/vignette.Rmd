@@ -1,0 +1,94 @@
+---
+title: "Semiparametric estimation of mediation and spillover effects in cluster-randomized trials"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"Semiparametric estimation of mediation and spillover effects in cluster-randomized trials}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+This vignette demonstrates the use of the R package `mediateCRT` to assess mediation effects in cluster-randomized trials based on the semiparametric methods that developed in [Cheng and Li (2024)](https://arxiv.org/abs/2404.18256). The `mediateCRT` package is available at [https://github.com/chaochengstat/mediateCRT](https://github.com/chaochengstat/mediateCRT) and can be installed as follows
+```{r, eval = FALSE}
+devtools::install_github("chaochengstat/mediateCRT")
+```
+
+## Estimation
+
+We focus on estimating three mediation effects, the natural indirect effect (NIE), natural direct effect (NDE), and spillover mediation effect (SME), corresponding to both cluster-level and individual-level total effects. For all $\xi \in \{\text{NIE}_C,\text{NIE}_I,\text{NDE}_C,\text{NDE}_I,\text{SME}_C,\text{SME}_I\}$, this package can implement the following 9 estimators, and their definitions are given in [Cheng and Li (2024)](https://arxiv.org/abs/2404.18256): $\hat \xi^{\text{mf-par}}$, $\hat \xi^{\text{eif$_1$-par-ns}}$, $\hat \xi^{\text{eif$_1$-par-s}}$, $\hat \xi^{\text{eif$_1$-ml-ns}}$, $\hat \xi^{\text{eif$_1$-ml-s}}$, $\hat \xi^{\text{eif$_2$-par-ns}}$, $\hat \xi^{\text{eif$_2$-par-s}}$, $\hat \xi^{\text{eif$_2$-ml-ns}}$, and $\hat \xi^{\text{eif$_2$-ml-s}}$.
+
+## Basic Syntax
+
+The data-fitting functions are `mediateCRT_est1` and `mediateCRT_est2`. Here, `mediateCRT_est1` implements the first five estimators $\hat \xi^{\text{mf-par}}$, $\hat \xi^{\text{eif$_1$-par-ns}}$, $\hat \xi^{\text{eif$_1$-par-s}}$, $\hat \xi^{\text{eif$_1$-ml-ns}}$, and $\hat \xi^{\text{eif$_1$-ml-s}}$. `mediateCRT_est2` implements the last four estimators $\hat \xi^{\text{eif$_2$-par-ns}}$, $\hat \xi^{\text{eif$_2$-par-s}}$, $\hat \xi^{\text{eif$_2$-ml-ns}}$, and $\hat \xi^{\text{eif$_2$-ml-s}}$.
+
+To implement `mediateCRT_est1`, one can run
+
+`mediateCRT_est1(data,id_name,N_name,A_name,M_name,Y_name,X_names,V_names,is_stab,B)`
+
+We require input the following arguments:
+
+* `data`: the dataset
+* `id_name`: cluster id
+* `N_name`: cluster size
+* `A_name`: treatment
+* `M_name`: mediator
+* `Y_name`: outcome
+* `X_names`: individual-level covariates
+* `V_names`: cluster-level covariates (if no cluster covariates, then set V_names=NULL)
+* `is_stab`: stabilization or not (1 yes, 0 no)
+* `B`: number of iterations for the bootstrap confidence interval
+
+The output of `mediateCRT_est1` includes the point estimates and 95% confidence intervals of $\text{NIE}_C$, $\text{NIE}_I$, $\text{NDE}_C$, $\text{NDE}_I$, $\text{SME}_C$, and $\text{SME}_I$. If we set `is_stab=0`, we obtain $\hat \xi^{\text{mf-par}}$, $\hat \xi^{\text{eif$_1$-par-ns}}$, and  $\hat \xi^{\text{eif$_1$-ml-ns}}$. If we set `is_stab=1`, we obtain $\hat \xi^{\text{mf-par}}$, $\hat \xi^{\text{eif$_1$-par-s}}$, and  $\hat \xi^{\text{eif$_1$-ml-s}}$. 
+
+The arguments and outputs in `mediateCRT_est2` are exactly same to`mediateCRT_est1`. If we set `is_stab=0`, we obtain $\hat \xi^{\text{eif$_2$-par-ns}}$ and  $\hat \xi^{\text{eif$_2$-ml-ns}}$. If we set `is_stab=1`, we obtain $\hat \xi^{\text{eif$_2$-par-s}}$ and  $\hat \xi^{\text{eif$_2$-ml-s}}$. 
+
+## An Illustrative Example
+
+Please library the `mrPStrata` package if needed.
+```{r import, message=FALSE, warning=FALSE}
+library("mediateCRT")
+```
+
+#### Data illustration
+
+In this example, we shall use a simulated dataset with $K=100$ clusters.
+
+```{r}
+attach(sim_data)
+head(sim_data)
+```
+In the `sim_data` dataset, we include one individual-level covariate `X`, one cluster-level covariate `C`, the treatment `A`, the mediator `M`, the outcome `Y`, cluster id `id`, and cluster size `N`.
+
+#### Implement the multiply robust estimators
+
+Below we obtain the semiparametric estimators of the mediation effects based on `mediateCRT_est1`. For illustrative purposes, we set `B=50` for 50 bootstrap replications.
+```{r}
+res = mediateCRT_est1(data = sim_data,
+                      id_name = "id",
+                      N_name = "N",
+                      A_name = "A",
+                      M_name = "M",
+                      Y_name = "Y",
+                      X_names = "X",
+                      V_names = "C",
+                      is_stab = 0,
+                      B = 50)
+```
+
+It outputs the following results
+```{r}
+print(res)
+```
+
+Similarly, one can implement `mediateCRT_est2` to explore the estimation of mediation effects under the reparameterized EIFs.  
+
+
