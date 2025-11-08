@@ -17,9 +17,9 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-This vignette demonstrates the use of the R package `mediateCRT` to assess mediation effects in cluster-randomized trials based on the semiparametric methods that developed in [Cheng and Li (2024)](https://arxiv.org/abs/2404.18256). The `mediateCRT` package is available at [https://github.com/chaochengstat/mediateCRT](https://github.com/chaochengstat/mediateCRT) and can be installed as follows
+This vignette demonstrates the use of the R package `DRmediateCRT` to assess mediation effects in cluster-randomized trials based on the semiparametric methods that developed in [Cheng and Li (2024)](https://arxiv.org/abs/2404.18256). The `DRmediateCRT` package is available at [https://github.com/chaochengstat/DRmediateCRT](https://github.com/chaochengstat/DRmediateCRT) and can be installed as follows
 ```{r, eval = FALSE}
-devtools::install_github("chaochengstat/mediateCRT")
+devtools::install_github("chaochengstat/DRmediateCRT")
 ```
 
 ## Estimation
@@ -55,7 +55,7 @@ The arguments and outputs in `mediateCRT_est2` are exactly same to`mediateCRT_es
 
 Please library the `mrPStrata` package if needed.
 ```{r import, message=FALSE, warning=FALSE}
-library("mediateCRT")
+library("DRmediateCRT")
 ```
 
 #### Data illustration

@@ -1,4 +1,4 @@
-Package: mediateCRT
+Package: DRmediateCRT
 Type: Package
 Title: Semiparametric Causal Mediation Analysis for Cluster-Randomized Trials
 Version: 0.1.0
